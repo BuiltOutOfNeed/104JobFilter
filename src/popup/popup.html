@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>104 Job Filter</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <div class="io-row">
+    <label class="io-btn" for="import-file">📂 匯入</label>
+    <input id="import-file" type="file" accept=".json" />
+    <button id="export-btn" class="io-btn">💾 匯出</button>
+  </div>
+
+  <section class="kw-section">
+    <h2>🚫 封鎖關鍵字</h2>
+    <div class="input-row">
+      <input id="block-input" type="text" placeholder="關鍵字，逗號分隔多個…" />
+      <button id="block-add-btn">新增</button>
+    </div>
+    <ul id="block-list"></ul>
+  </section>
+
+  <section class="kw-section">
+    <h2>⭐ 醒目關鍵字</h2>
+    <div class="input-row">
+      <input id="highlight-input" type="text" placeholder="關鍵字，逗號分隔多個…" />
+      <button id="highlight-add-btn">新增</button>
+    </div>
+    <ul id="highlight-list"></ul>
+  </section>
+  <section class="kw-section">
+    <h2>🔍 抓取已投遞公司</h2>
+    <div class="scrape-row">
+      <button id="scrape-btn">開始抓取</button>
+      <span id="scrape-status"></span>
+    </div>
+    <div id="scrape-results" class="scrape-results hidden">
+      <ul id="scrape-list"></ul>
+      <div class="scrape-actions">
+        <button id="scrape-add-block">全部加入封鎖</button>
+        <button id="scrape-add-highlight">全部加入醒目</button>
+      </div>
+    </div>
+  </section>
+  <script src="../shared/constants.js"></script>
+  <script src="../shared/storage.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>
