@@ -2,6 +2,17 @@
 
 [![Chrome Web Store](https://img.shields.io/badge/Chrome%20Web%20Store-即將上架-lightgrey)](https://github.com/BuiltOutOfNeed/104JobFilter)
 
+## Demo
+
+**Block keywords**
+![Block demo](docs/screenshots/hide.gif)
+
+**Highlight keywords**
+![Highlight demo](docs/screenshots/highlight.gif)
+
+![Screenshot](docs/screenshots/screenshot1.JPG)
+![Screenshot](docs/screenshots/screenshot2.JPG)
+
 ---
 
 ## 繁體中文
@@ -19,6 +30,7 @@
 - **即時生效** — 新增或移除關鍵字後無需重新整理頁面
 - **抓取投遞公司** — 從您的 104 投遞紀錄自動抓取公司名稱，批次加入封鎖或醒目清單
 - **匯入 / 匯出** — 以單一 JSON 檔案備份與還原所有關鍵字
+
 
 ### 安裝方式
 
