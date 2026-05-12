@@ -12,24 +12,38 @@ function normalizeItems(items) {
 
 function getKeywords() {
   return new Promise((resolve) => {
-    chrome.storage.sync.get(STORAGE_KEY, (r) => resolve(normalizeItems(r[STORAGE_KEY])));
+    chrome.storage.local.get(STORAGE_KEY, (r) => resolve(normalizeItems(r[STORAGE_KEY])));
   });
 }
 
 function setKeywords(items) {
-  return new Promise((resolve) => {
-    chrome.storage.sync.set({ [STORAGE_KEY]: items }, resolve);
+  return new Promise((resolve, reject) => {
+    chrome.storage.local.set({ [STORAGE_KEY]: items }, () => {
+      if (chrome.runtime.lastError) {
+        console.error('[JF] setKeywords error:', chrome.runtime.lastError.message);
+        reject(new Error(chrome.runtime.lastError.message));
+      } else {
+        resolve();
+      }
+    });
   });
 }
 
 function getHighlightKeywords() {
   return new Promise((resolve) => {
-    chrome.storage.sync.get(HIGHLIGHT_KEY, (r) => resolve(normalizeItems(r[HIGHLIGHT_KEY])));
+    chrome.storage.local.get(HIGHLIGHT_KEY, (r) => resolve(normalizeItems(r[HIGHLIGHT_KEY])));
   });
 }
 
 function setHighlightKeywords(items) {
-  return new Promise((resolve) => {
-    chrome.storage.sync.set({ [HIGHLIGHT_KEY]: items }, resolve);
+  return new Promise((resolve, reject) => {
+    chrome.storage.local.set({ [HIGHLIGHT_KEY]: items }, () => {
+      if (chrome.runtime.lastError) {
+        console.error('[JF] setHighlightKeywords error:', chrome.runtime.lastError.message);
+        reject(new Error(chrome.runtime.lastError.message));
+      } else {
+        resolve();
+      }
+    });
   });
 }
