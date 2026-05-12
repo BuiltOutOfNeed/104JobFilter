@@ -22,6 +22,9 @@
 🔍 一鍵抓取投遞紀錄
 自動從您的 104 投遞紀錄抓取所有公司名稱，批次加入封鎖或醒目清單，快速過濾已投遞過的公司。
 
+💬 抓取聯絡我的公司
+自動從您的 104 訊息紀錄抓取曾主動聯絡您的公司名稱，批次加入封鎖或醒目清單。
+
 ⚙️ 彈性設定
 - 支援正規表達式（Regex）
 - 不分大小寫比對
@@ -53,6 +56,9 @@ Mark interesting listings with a colored border and background. Choose from 6 co
 
 🔍 Applied Company Scraper
 Automatically fetch all company names from your 104 application history and bulk-add them to your block or highlight list. Great for filtering out companies you've already applied to.
+
+💬 Contacted Company Scraper
+Automatically fetch company names that have messaged you on 104 and bulk-add them to your block or highlight list.
 
 ⚙️ Flexible Controls
 - Regular expression (Regex) support per keyword

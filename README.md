@@ -29,6 +29,7 @@
 - **不分大小寫** 的文字比對；可選擇啟用 Regex
 - **即時生效** — 新增或移除關鍵字後無需重新整理頁面
 - **抓取投遞公司** — 從您的 104 投遞紀錄自動抓取公司名稱，批次加入封鎖或醒目清單
+- **抓取聯絡公司** — 從您的 104 訊息紀錄自動抓取曾聯絡您的公司名稱，批次加入封鎖或醒目清單
 - **匯入 / 匯出** — 以單一 JSON 檔案備份與還原所有關鍵字
 
 
@@ -51,7 +52,7 @@
 2. 點擊擴充功能圖示開啟彈出視窗
 3. 在**封鎖關鍵字**清單新增關鍵字以隱藏對應工作卡片
 4. 在**醒目關鍵字**清單新增關鍵字以彩色標記對應卡片
-5. 使用「抓取已投遞公司」功能，直接從 104 抓取您的投遞紀錄
+5. 使用「抓取已投遞公司」或「抓取聯絡我的公司」功能，直接從 104 批次匯入公司名稱
 
 ### 隱私權
 
@@ -72,7 +73,8 @@ A Chrome extension that filters and highlights job listings on [104.com.tw](http
 - **Per-keyword controls** — toggle regex mode, enable/disable, or remove each keyword individually
 - **Case-insensitive** plain text matching; optional regex per keyword
 - **Real-time** — changes apply instantly without page refresh
-- **Scraper** — fetch all applied company names from your 104 application history and bulk-add them to the block or highlight list
+- **Applied company scraper** — fetch all applied company names from your 104 application history and bulk-add them to the block or highlight list
+- **Contacted company scraper** — fetch company names that have messaged you on 104 and bulk-add them to the block or highlight list
 - **Import / Export** — save and restore all keywords as a single JSON file
 
 ### Installation
@@ -94,7 +96,7 @@ A Chrome extension that filters and highlights job listings on [104.com.tw](http
 2. Click the extension icon to open the popup
 3. Add keywords to the **Block** list to hide matching job cards
 4. Add keywords to the **Highlight** list to mark matching cards with a colored border
-5. Use the scraper section to pull your applied company names directly from 104
+5. Use the scraper sections to bulk-import applied or contacted company names directly from 104
 
 ### Privacy
 
