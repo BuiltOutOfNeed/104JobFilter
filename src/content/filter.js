@@ -3,7 +3,9 @@ const HIGHLIGHT_CLASS = 'jf-highlight';
 const MATCH_LABEL_CLASS = 'jf-match-label';
 
 (function injectStyle() {
+  if (document.getElementById('jf-style')) return;
   const style = document.createElement('style');
+  style.id = 'jf-style';
   style.textContent = `
     .${HIDDEN_CLASS} { display: none !important; }
     .${HIGHLIGHT_CLASS} {
@@ -82,5 +84,4 @@ function scanRoot(root, blockItems, highlightItems) {
       setMatchLabel(card, []);
     }
   });
-
 }

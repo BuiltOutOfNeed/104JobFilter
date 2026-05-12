@@ -26,6 +26,8 @@
   - 6 種顏色：黃、紅、綠、藍、橙、紫
   - 可拖曳排序 — 第一個符合的關鍵字顏色優先
 - **個別控制** — 每個關鍵字可單獨切換 Regex 模式、啟用/停用或刪除
+- **全體啟用/停用** — 三態勾選框一鍵切換整個清單；顯示啟用/總數計數
+- **清除全部** — 兩次點擊確認，防止誤刪
 - **不分大小寫** 的文字比對；可選擇啟用 Regex
 - **即時生效** — 新增或移除關鍵字後無需重新整理頁面
 - **抓取投遞公司** — 從您的 104 投遞紀錄自動抓取公司名稱，批次加入封鎖或醒目清單
@@ -71,6 +73,8 @@ A Chrome extension that filters and highlights job listings on [104.com.tw](http
   - 6 colors: yellow, red, green, blue, orange, purple
   - Drag to reorder — first matched keyword's color wins
 - **Per-keyword controls** — toggle regex mode, enable/disable, or remove each keyword individually
+- **Master toggle** — tri-state checkbox to enable/disable all at once; shows enabled/total count
+- **Clear all** — two-click confirmation to prevent accidental deletion
 - **Case-insensitive** plain text matching; optional regex per keyword
 - **Real-time** — changes apply instantly without page refresh
 - **Applied company scraper** — fetch all applied company names from your 104 application history and bulk-add them to the block or highlight list

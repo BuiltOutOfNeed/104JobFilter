@@ -172,7 +172,7 @@ function wireSection({ inputId, addBtnId, listId, getter, setter, showColor = fa
       items,
       (id) => save((cur) => cur.filter((k) => k.id !== id)),
       (id) => save((cur) => cur.map((k) => k.id === id ? { ...k, isRegex: !k.isRegex } : k)),
-      (id) => save((cur) => cur.map((k) => k.id === id ? { ...k, enabled: k.enabled === false ? true : false } : k)),
+      (id) => save((cur) => cur.map((k) => k.id === id ? { ...k, enabled: k.enabled === false } : k)),
       showColor ? (id, color) => save((cur) => cur.map((k) => k.id === id ? { ...k, color } : k)) : null,
       showColor ? async (from, to) => {
         try {
