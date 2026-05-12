@@ -10,8 +10,8 @@
 **Highlight keywords**
 ![Highlight demo](docs/screenshots/highlight.gif)
 
-![Screenshot](docs/screenshots/screenshot1.JPG)
-![Screenshot](docs/screenshots/screenshot2.JPG)
+![Screenshot](docs/screenshots/screenshot1.png)
+![Screenshot](docs/screenshots/screenshot2.png)
 
 ---
 
