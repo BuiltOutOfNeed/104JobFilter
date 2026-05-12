@@ -82,4 +82,5 @@ function scanRoot(root, blockItems, highlightItems) {
       setMatchLabel(card, []);
     }
   });
+
 }

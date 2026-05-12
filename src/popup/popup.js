@@ -42,7 +42,7 @@ function parseEntries(raw) {
     .split(',')
     .map((s) => s.trim())
     .filter((s) => s.length > 0)
-    .map((text) => ({ text, isRegex: false }));
+    .map((text) => ({ id: crypto.randomUUID(), text, isRegex: false }));
 }
 
 async function addTo(getter, setter, entries) {
@@ -156,33 +156,34 @@ function wireSection({ inputId, addBtnId, listId, getter, setter, showColor = fa
   const input = document.getElementById(inputId);
   const addBtn = document.getElementById(addBtnId);
 
+  async function save(updater) {
+    try {
+      const current = await getter();
+      await setter(updater(current));
+    } catch (err) {
+      alert(`儲存失敗：${err.message}`);
+    }
+  }
+
   async function refresh() {
     const items = await getter();
     renderList(
       listId,
       items,
-      async (id) => {
-        const current = await getter();
-        await setter(current.filter((k) => k.id !== id));
-      },
-      async (id) => {
-        const current = await getter();
-        await setter(current.map((k) => k.id === id ? { ...k, isRegex: !k.isRegex } : k));
-      },
-      async (id) => {
-        const current = await getter();
-        await setter(current.map((k) => k.id === id ? { ...k, enabled: k.enabled === false ? true : false } : k));
-      },
-      showColor ? async (id, color) => {
-        const current = await getter();
-        await setter(current.map((k) => k.id === id ? { ...k, color } : k));
-      } : null,
+      (id) => save((cur) => cur.filter((k) => k.id !== id)),
+      (id) => save((cur) => cur.map((k) => k.id === id ? { ...k, isRegex: !k.isRegex } : k)),
+      (id) => save((cur) => cur.map((k) => k.id === id ? { ...k, enabled: k.enabled === false ? true : false } : k)),
+      showColor ? (id, color) => save((cur) => cur.map((k) => k.id === id ? { ...k, color } : k)) : null,
       showColor ? async (from, to) => {
-        const current = await getter();
-        const updated = [...current];
-        const [moved] = updated.splice(from, 1);
-        updated.splice(to, 0, moved);
-        await setter(updated);
+        try {
+          const current = await getter();
+          const updated = [...current];
+          const [moved] = updated.splice(from, 1);
+          updated.splice(to, 0, moved);
+          await setter(updated);
+        } catch (err) {
+          alert(`儲存失敗：${err.message}`);
+        }
       } : null,
     );
   }
@@ -190,9 +191,13 @@ function wireSection({ inputId, addBtnId, listId, getter, setter, showColor = fa
   addBtn.addEventListener('click', async () => {
     const entries = parseEntries(input.value);
     if (!entries.length) return;
-    await addTo(getter, setter, entries);
-    input.value = '';
-    await refresh();
+    try {
+      await addTo(getter, setter, entries);
+      input.value = '';
+      await refresh();
+    } catch (err) {
+      alert(`新增失敗：${err.message}`);
+    }
   });
 
   input.addEventListener('keydown', (e) => {
@@ -200,6 +205,41 @@ function wireSection({ inputId, addBtnId, listId, getter, setter, showColor = fa
   });
 
   return refresh;
+}
+
+function syncToggle(cb, countEl, items) {
+  const enabledCount = items.filter((k) => k.enabled !== false).length;
+  countEl.textContent = items.length ? `${enabledCount}/${items.length}` : '';
+  if (!items.length) {
+    cb.indeterminate = false;
+    cb.checked = true;
+    return;
+  }
+  if (enabledCount === items.length) {
+    cb.indeterminate = false;
+    cb.checked = true;
+  } else if (enabledCount === 0) {
+    cb.indeterminate = false;
+    cb.checked = false;
+  } else {
+    cb.indeterminate = true;
+  }
+}
+
+async function updateBlockToggle() {
+  syncToggle(
+    document.getElementById('block-enable-all'),
+    document.getElementById('block-count'),
+    await getKeywords(),
+  );
+}
+
+async function updateHighlightToggle() {
+  syncToggle(
+    document.getElementById('highlight-enable-all'),
+    document.getElementById('highlight-count'),
+    await getHighlightKeywords(),
+  );
 }
 
 async function init() {
@@ -221,6 +261,89 @@ async function init() {
   });
 
   await Promise.all([refreshBlock(), refreshHighlight()]);
+  await Promise.all([updateBlockToggle(), updateHighlightToggle()]);
+
+  const clearBtn = document.getElementById('block-clear-btn');
+  let clearPending = false;
+  let clearResetTimer = null;
+
+  clearBtn.addEventListener('click', async () => {
+    if (!clearPending) {
+      clearPending = true;
+      clearBtn.textContent = '確定清除？';
+      clearBtn.classList.add('clear-btn-danger');
+      clearResetTimer = setTimeout(() => {
+        clearPending = false;
+        clearBtn.textContent = '清除全部';
+        clearBtn.classList.remove('clear-btn-danger');
+      }, 3000);
+      return;
+    }
+    clearTimeout(clearResetTimer);
+    clearPending = false;
+    clearBtn.textContent = '清除全部';
+    clearBtn.classList.remove('clear-btn-danger');
+    try {
+      await setKeywords([]);
+      await refreshBlock();
+      await updateBlockToggle();
+    } catch (err) {
+      alert(`清除失敗：${err.message}`);
+    }
+  });
+
+  const blockEnableAll = document.getElementById('block-enable-all');
+  blockEnableAll.addEventListener('change', async () => {
+    try {
+      const current = await getKeywords();
+      await setKeywords(current.map((k) => ({ ...k, enabled: blockEnableAll.checked })));
+      if (!blockEnableAll.checked) {
+        const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+        chrome.tabs.sendMessage(tab.id, { action: 'unhideAll' });
+      }
+    } catch (err) {
+      alert(`儲存失敗：${err.message}`);
+    }
+  });
+
+  const highlightClearBtn = document.getElementById('highlight-clear-btn');
+  let highlightClearPending = false;
+  let highlightClearResetTimer = null;
+
+  highlightClearBtn.addEventListener('click', async () => {
+    if (!highlightClearPending) {
+      highlightClearPending = true;
+      highlightClearBtn.textContent = '確定清除？';
+      highlightClearBtn.classList.add('clear-btn-danger');
+      highlightClearResetTimer = setTimeout(() => {
+        highlightClearPending = false;
+        highlightClearBtn.textContent = '清除全部';
+        highlightClearBtn.classList.remove('clear-btn-danger');
+      }, 3000);
+      return;
+    }
+    clearTimeout(highlightClearResetTimer);
+    highlightClearPending = false;
+    highlightClearBtn.textContent = '清除全部';
+    highlightClearBtn.classList.remove('clear-btn-danger');
+    try {
+      await setHighlightKeywords([]);
+      await refreshHighlight();
+      await updateHighlightToggle();
+    } catch (err) {
+      alert(`清除失敗：${err.message}`);
+    }
+  });
+
+  const highlightEnableAll = document.getElementById('highlight-enable-all');
+  highlightEnableAll.addEventListener('change', async () => {
+    try {
+      const current = await getHighlightKeywords();
+      await setHighlightKeywords(current.map((k) => ({ ...k, enabled: highlightEnableAll.checked })));
+    } catch (err) {
+      alert(`儲存失敗：${err.message}`);
+    }
+  });
 
   document.getElementById('export-btn').addEventListener('click', async () => {
     const [block, highlight] = await Promise.all([getKeywords(), getHighlightKeywords()]);
@@ -245,9 +368,9 @@ async function init() {
   });
 
   chrome.storage.onChanged.addListener((changes, area) => {
-    if (area !== 'sync') return;
-    if (changes[STORAGE_KEY]) refreshBlock();
-    if (changes[HIGHLIGHT_KEY]) refreshHighlight();
+    if (area !== 'local') return;
+    if (changes[STORAGE_KEY]) { refreshBlock(); updateBlockToggle(); }
+    if (changes[HIGHLIGHT_KEY]) { refreshHighlight(); updateHighlightToggle(); }
   });
 }
 
@@ -259,7 +382,7 @@ async function initScraper() {
   let scrapedCompanies = [];
 
   chrome.runtime.onMessage.addListener((msg) => {
-    if (msg.action === 'scrapeProgress') {
+    if (msg.action === 'scrapeProgress' && msg.source === 'applied') {
       scrapeStatus.textContent = `抓取中… ${msg.page} / ${msg.lastPage}`;
     }
   });
@@ -290,22 +413,125 @@ async function initScraper() {
         scrapeList.appendChild(li);
       });
       scrapeResults.classList.remove('hidden');
+      setTimeout(() => scrapeResults.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 0);
     });
   });
 
+  function clearScrapeResults() {
+    scrapedCompanies = [];
+    scrapeList.innerHTML = '';
+    scrapeResults.classList.add('hidden');
+  }
+
   document.getElementById('scrape-add-block').addEventListener('click', async () => {
     const entries = scrapedCompanies.map((text) => ({ text, isRegex: false }));
-    await addTo(getKeywords, setKeywords, entries);
-    scrapeStatus.textContent = '✅ 已加入封鎖清單';
+    try {
+      await addTo(getKeywords, setKeywords, entries);
+      clearScrapeResults();
+      scrapeStatus.textContent = '✅ 已加入封鎖清單';
+    } catch (err) {
+      scrapeStatus.textContent = `❌ 儲存失敗：${err.message}`;
+    }
   });
 
   document.getElementById('scrape-add-highlight').addEventListener('click', async () => {
     const entries = scrapedCompanies.map((text) => ({ text, isRegex: false }));
-    await addTo(getHighlightKeywords, setHighlightKeywords, entries);
-    scrapeStatus.textContent = '✅ 已加入醒目清單';
+    try {
+      await addTo(getHighlightKeywords, setHighlightKeywords, entries);
+      clearScrapeResults();
+      scrapeStatus.textContent = '✅ 已加入醒目清單';
+    } catch (err) {
+      scrapeStatus.textContent = `❌ 儲存失敗：${err.message}`;
+    }
+  });
+}
+
+async function initContactedScraper() {
+  const scrapeBtn = document.getElementById('contacted-scrape-btn');
+  const scrapeStatus = document.getElementById('contacted-scrape-status');
+  const scrapeResults = document.getElementById('contacted-scrape-results');
+  const scrapeList = document.getElementById('contacted-scrape-list');
+  let scrapedCompanies = [];
+
+  chrome.runtime.onMessage.addListener((msg) => {
+    if (msg.action === 'scrapeProgress' && msg.source === 'contacted') {
+      scrapeStatus.textContent = `抓取中… ${msg.page} / ${msg.lastPage}`;
+    }
+  });
+
+  scrapeBtn.addEventListener('click', async () => {
+    scrapeBtn.disabled = true;
+    scrapeStatus.textContent = '連線中…';
+    scrapeResults.classList.add('hidden');
+    scrapedCompanies = [];
+
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    chrome.tabs.sendMessage(tab.id, { action: 'scrapeContacted' }, (res) => {
+      scrapeBtn.disabled = false;
+      if (chrome.runtime.lastError || !res) {
+        scrapeStatus.textContent = '❌ 請在 104.com.tw 頁面執行';
+        return;
+      }
+      if (res.error) {
+        scrapeStatus.textContent = `❌ ${res.error}`;
+        return;
+      }
+      scrapedCompanies = res.companies;
+      scrapeStatus.textContent = `✅ 共 ${scrapedCompanies.length} 間公司`;
+      scrapeList.innerHTML = '';
+      scrapedCompanies.forEach((name) => {
+        const li = document.createElement('li');
+        li.textContent = name;
+        scrapeList.appendChild(li);
+      });
+      scrapeResults.classList.remove('hidden');
+      setTimeout(() => scrapeResults.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 0);
+    });
+  });
+
+  function clearContactedResults() {
+    scrapedCompanies = [];
+    scrapeList.innerHTML = '';
+    scrapeResults.classList.add('hidden');
+  }
+
+  document.getElementById('contacted-scrape-add-block').addEventListener('click', async () => {
+    const entries = scrapedCompanies.map((text) => ({ text, isRegex: false }));
+    try {
+      await addTo(getKeywords, setKeywords, entries);
+      clearContactedResults();
+      scrapeStatus.textContent = '✅ 已加入封鎖清單';
+    } catch (err) {
+      scrapeStatus.textContent = `❌ 儲存失敗：${err.message}`;
+    }
+  });
+
+  document.getElementById('contacted-scrape-add-highlight').addEventListener('click', async () => {
+    const entries = scrapedCompanies.map((text) => ({ text, isRegex: false }));
+    try {
+      await addTo(getHighlightKeywords, setHighlightKeywords, entries);
+      clearContactedResults();
+      scrapeStatus.textContent = '✅ 已加入醒目清單';
+    } catch (err) {
+      scrapeStatus.textContent = `❌ 儲存失敗：${err.message}`;
+    }
+  });
+}
+
+function initCollapsible() {
+  document.querySelectorAll('.kw-section.collapsible > h2').forEach((h2) => {
+    h2.addEventListener('click', () => {
+      const section = h2.closest('.kw-section');
+      const wasCollapsed = section.classList.contains('collapsed');
+      section.classList.toggle('collapsed');
+      if (wasCollapsed) {
+        setTimeout(() => section.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 0);
+      }
+    });
   });
 }
 
 (async () => {
-  await Promise.all([init(), initScraper()]);
+  await Promise.all([init(), initScraper(), initContactedScraper()]);
+  initCollapsible();
 })();

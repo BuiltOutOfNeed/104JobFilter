@@ -13,34 +13,61 @@
     <button id="export-btn" class="io-btn">💾 匯出</button>
   </div>
 
-  <section class="kw-section">
+  <section class="kw-section collapsible">
     <h2>🚫 封鎖關鍵字</h2>
     <div class="input-row">
       <input id="block-input" type="text" placeholder="關鍵字，逗號分隔多個…" />
       <button id="block-add-btn">新增</button>
     </div>
+    <div class="block-enable-row">
+      <label style="display:flex;align-items:center;gap:6px;flex:1;cursor:pointer;">
+        <input type="checkbox" id="block-enable-all" checked /> 啟用封鎖 <span id="block-count" class="block-count"></span>
+      </label>
+      <button id="block-clear-btn" class="clear-btn">清除全部</button>
+    </div>
     <ul id="block-list"></ul>
   </section>
 
-  <section class="kw-section">
+  <section class="kw-section collapsible">
     <h2>⭐ 醒目關鍵字</h2>
     <div class="input-row">
       <input id="highlight-input" type="text" placeholder="關鍵字，逗號分隔多個…" />
       <button id="highlight-add-btn">新增</button>
     </div>
+    <div class="block-enable-row">
+      <label style="display:flex;align-items:center;gap:6px;flex:1;cursor:pointer;">
+        <input type="checkbox" id="highlight-enable-all" checked /> 啟用醒目 <span id="highlight-count" class="block-count"></span>
+      </label>
+      <button id="highlight-clear-btn" class="clear-btn">清除全部</button>
+    </div>
     <ul id="highlight-list"></ul>
   </section>
-  <section class="kw-section">
+  <section class="kw-section collapsible collapsed">
     <h2>🔍 抓取已投遞公司</h2>
     <div class="scrape-row">
-      <button id="scrape-btn">開始抓取</button>
-      <span id="scrape-status"></span>
+      <button id="scrape-btn" class="scrape-btn">開始抓取</button>
+      <span id="scrape-status" class="scrape-status"></span>
     </div>
     <div id="scrape-results" class="scrape-results hidden">
       <ul id="scrape-list"></ul>
       <div class="scrape-actions">
         <button id="scrape-add-block">全部加入封鎖</button>
         <button id="scrape-add-highlight">全部加入醒目</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="kw-section collapsible collapsed">
+    <h2>💬 抓取聯絡我的公司</h2>
+    <div class="scrape-row">
+      <button id="contacted-scrape-btn" class="scrape-btn">開始抓取</button>
+      <span id="contacted-scrape-status" class="scrape-status"></span>
+    </div>
+    <div id="contacted-scrape-results" class="scrape-results hidden">
+      <ul id="contacted-scrape-list"></ul>
+      <div class="scrape-actions">
+        <button id="contacted-scrape-add-block">全部加入封鎖</button>
+        <button id="contacted-scrape-add-highlight">全部加入醒目</button>
       </div>
     </div>
   </section>

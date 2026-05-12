@@ -33,7 +33,7 @@ function patchHistoryMethod(method) {
   window.addEventListener('popstate', rescan);
 
   chrome.storage.onChanged.addListener((changes, area) => {
-    if (area !== 'sync') return;
+    if (area !== 'local') return;
     if (changes[STORAGE_KEY]) cachedBlockKeywords = normalizeItems(changes[STORAGE_KEY].newValue);
     if (changes[HIGHLIGHT_KEY]) cachedHighlightKeywords = normalizeItems(changes[HIGHLIGHT_KEY].newValue);
     if (changes[STORAGE_KEY] || changes[HIGHLIGHT_KEY]) rescan();
@@ -41,9 +41,21 @@ function patchHistoryMethod(method) {
 })();
 
 chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
+  if (msg.action === 'unhideAll') {
+    unhideAll();
+    return;
+  }
   if (msg.action === 'scrapeApplied') {
     scrapeAppliedCompanies((page, lastPage) => {
-      chrome.runtime.sendMessage({ action: 'scrapeProgress', page, lastPage });
+      chrome.runtime.sendMessage({ action: 'scrapeProgress', source: 'applied', page, lastPage });
+    })
+      .then((companies) => sendResponse({ companies }))
+      .catch((err) => sendResponse({ error: err.message }));
+    return true;
+  }
+  if (msg.action === 'scrapeContacted') {
+    scrapeContactedCompanies((page, lastPage) => {
+      chrome.runtime.sendMessage({ action: 'scrapeProgress', source: 'contacted', page, lastPage });
     })
       .then((companies) => sendResponse({ companies }))
       .catch((err) => sendResponse({ error: err.message }));
