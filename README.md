@@ -1,6 +1,7 @@
 # 104 求職過濾器 | 104 Job Filter
 
-[![Chrome Web Store](https://img.shields.io/badge/Chrome%20Web%20Store-即將上架-lightgrey)](https://github.com/BuiltOutOfNeed/104JobFilter)
+[![Chrome Web Store](https://img.shields.io/chrome-web-store/v/aaonajbegfnfhegeghkbmdggdaojnome?label=Chrome%20Web%20Store&color=4285F4)](https://chromewebstore.google.com/detail/104-%E6%B1%82%E8%81%B7%E9%81%8E%E6%BF%BE%E5%99%A8-104-job-filter/aaonajbegfnfhegeghkbmdggdaojnome)
+[![Medium](https://img.shields.io/badge/Medium-文章-black?logo=medium)](https://medium.com/@builtoutofneed/%E6%88%91%E5%9C%A8-104-%E6%89%BE%E5%B7%A5%E4%BD%9C-%E7%84%B6%E5%BE%8C%E5%AF%AB%E4%BA%86%E4%B8%80%E5%80%8B-chrome-%E6%93%B4%E5%85%85%E5%8A%9F%E8%83%BD-16b7de4d0664)
 
 ## Demo
 
@@ -46,7 +47,7 @@
 
 #### Chrome 線上應用程式商店
 
-*即將上架*
+[立即安裝](https://chromewebstore.google.com/detail/104-%E6%B1%82%E8%81%B7%E9%81%8E%E6%BF%BE%E5%99%A8-104-job-filter/aaonajbegfnfhegeghkbmdggdaojnome)
 
 ### 使用方式
 
@@ -92,7 +93,7 @@ A Chrome extension that filters and highlights job listings on [104.com.tw](http
 
 #### Chrome Web Store
 
-*Coming soon*
+[Install now](https://chromewebstore.google.com/detail/104-%E6%B1%82%E8%81%B7%E9%81%8E%E6%BF%BE%E5%99%A8-104-job-filter/aaonajbegfnfhegeghkbmdggdaojnome)
 
 ### Usage
 
