@@ -351,3 +351,21 @@ ul li.disabled .kw-text {
   text-align: center;
   padding: 8px 0;
 }
+
+.popup-footer {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid #e0e0e0;
+  text-align: center;
+  font-size: 11px;
+}
+
+.popup-footer a {
+  color: #888;
+  text-decoration: none;
+}
+
+.popup-footer a:hover {
+  color: #1a73e8;
+  text-decoration: underline;
+}

@@ -381,30 +381,17 @@ async function initScraper() {
   const scrapeList = document.getElementById('scrape-list');
   let scrapedCompanies = [];
 
-  chrome.runtime.onMessage.addListener((msg) => {
-    if (msg.action === 'scrapeProgress' && msg.source === 'applied') {
-      scrapeStatus.textContent = `抓取中… ${msg.page} / ${msg.lastPage}`;
-    }
-  });
-
   scrapeBtn.addEventListener('click', async () => {
     scrapeBtn.disabled = true;
     scrapeStatus.textContent = '連線中…';
     scrapeResults.classList.add('hidden');
     scrapedCompanies = [];
 
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    chrome.tabs.sendMessage(tab.id, { action: 'scrapeApplied' }, (res) => {
-      scrapeBtn.disabled = false;
-      if (chrome.runtime.lastError || !res) {
-        scrapeStatus.textContent = '❌ 請在 104.com.tw 頁面執行';
-        return;
-      }
-      if (res.error) {
-        scrapeStatus.textContent = `❌ ${res.error}`;
-        return;
-      }
-      scrapedCompanies = res.companies;
+    try {
+      const companies = await scrapeAppliedCompanies((page, lastPage) => {
+        scrapeStatus.textContent = `抓取中… ${page} / ${lastPage}`;
+      });
+      scrapedCompanies = companies;
       scrapeStatus.textContent = `✅ 共 ${scrapedCompanies.length} 間公司`;
       scrapeList.innerHTML = '';
       scrapedCompanies.forEach((name) => {
@@ -414,7 +401,11 @@ async function initScraper() {
       });
       scrapeResults.classList.remove('hidden');
       setTimeout(() => scrapeResults.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 0);
-    });
+    } catch (err) {
+      scrapeStatus.textContent = `❌ ${err.message}`;
+    } finally {
+      scrapeBtn.disabled = false;
+    }
   });
 
   function clearScrapeResults() {
@@ -453,30 +444,17 @@ async function initContactedScraper() {
   const scrapeList = document.getElementById('contacted-scrape-list');
   let scrapedCompanies = [];
 
-  chrome.runtime.onMessage.addListener((msg) => {
-    if (msg.action === 'scrapeProgress' && msg.source === 'contacted') {
-      scrapeStatus.textContent = `抓取中… ${msg.page} / ${msg.lastPage}`;
-    }
-  });
-
   scrapeBtn.addEventListener('click', async () => {
     scrapeBtn.disabled = true;
     scrapeStatus.textContent = '連線中…';
     scrapeResults.classList.add('hidden');
     scrapedCompanies = [];
 
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    chrome.tabs.sendMessage(tab.id, { action: 'scrapeContacted' }, (res) => {
-      scrapeBtn.disabled = false;
-      if (chrome.runtime.lastError || !res) {
-        scrapeStatus.textContent = '❌ 請在 104.com.tw 頁面執行';
-        return;
-      }
-      if (res.error) {
-        scrapeStatus.textContent = `❌ ${res.error}`;
-        return;
-      }
-      scrapedCompanies = res.companies;
+    try {
+      const companies = await scrapeContactedCompanies((page, lastPage) => {
+        scrapeStatus.textContent = `抓取中… ${page} / ${lastPage}`;
+      });
+      scrapedCompanies = companies;
       scrapeStatus.textContent = `✅ 共 ${scrapedCompanies.length} 間公司`;
       scrapeList.innerHTML = '';
       scrapedCompanies.forEach((name) => {
@@ -486,7 +464,11 @@ async function initContactedScraper() {
       });
       scrapeResults.classList.remove('hidden');
       setTimeout(() => scrapeResults.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 0);
-    });
+    } catch (err) {
+      scrapeStatus.textContent = `❌ ${err.message}`;
+    } finally {
+      scrapeBtn.disabled = false;
+    }
   });
 
   function clearContactedResults() {
